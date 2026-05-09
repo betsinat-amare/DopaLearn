@@ -6,10 +6,6 @@ import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
 import { User } from './modules/users/entities/user.entity';
 import { AuthModule } from './modules/auth/auth.module';
-import { UserModule } from './modules/users/user.module';
-
-
-
 
 @Module({
   imports: [
@@ -20,21 +16,19 @@ import { UserModule } from './modules/users/user.module';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_DATABASE'),
+        url: configService.get<string>('DATABASE_URL'),
         entities: [User],
         synchronize: true, // Only for development!
+        ssl: {
+          rejectUnauthorized: false, // Required for Supabase in many environments
+        },
       }),
       inject: [ConfigService],
     }),
     UsersModule,
     AuthModule,
-    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
