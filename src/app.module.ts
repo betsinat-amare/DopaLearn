@@ -6,6 +6,9 @@ import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
 import { User } from './modules/users/entities/user.entity';
 import { AuthModule } from './modules/auth/auth.module';
+import { VideosModule } from './modules/videos/videos.module';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { StorageModule } from './modules/storage/storage.module';
 
 @Module({
   imports: [
@@ -17,7 +20,7 @@ import { AuthModule } from './modules/auth/auth.module';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get<string>('DATABASE_URL'),
-        entities: [User],
+        autoLoadEntities: true,
         synchronize: true, // Only for development!
         ssl: {
           rejectUnauthorized: false, // Required for Supabase in many environments
@@ -27,6 +30,9 @@ import { AuthModule } from './modules/auth/auth.module';
     }),
     UsersModule,
     AuthModule,
+    VideosModule,
+    CategoriesModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
