@@ -28,9 +28,13 @@ export class UsersService {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Logic for fixed admin
+    const role = email === 'betsi@gmail.com' ? 'admin' : 'user';
+
     const user = this.userRepository.create({
       ...createUserDto,
       password: hashedPassword,
+      role,
     });
 
     return this.userRepository.save(user);
