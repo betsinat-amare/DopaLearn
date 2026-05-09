@@ -10,22 +10,37 @@ async function seed() {
   const categoryRepo = dataSource.getRepository(Category);
   const vocabularyRepo = dataSource.getRepository(Vocabulary);
 
-  // 1. Seed Categories
-  const categories = ['maths', 'coding', 'cooking', 'language'];
-  for (const name of categories) {
-    const exists = await categoryRepo.findOne({ where: { name } });
-    if (!exists) {
-      await categoryRepo.save(categoryRepo.create({ name, description: `Videos about ${name}` }));
-      console.log(`Category ${name} created.`);
+  // 1. Seed Main Categories
+  const mainCategories = ['maths', 'coding', 'cooking', 'language'];
+  for (const name of mainCategories) {
+    let category = await categoryRepo.findOne({ where: { name } });
+    if (!category) {
+      category = await categoryRepo.save(categoryRepo.create({ name, description: `Videos about ${name}` }));
+      console.log(`Main Category ${name} created.`);
+    }
+
+    // 2. Seed Sub-categories for Language
+    if (name === 'language') {
+      const subLanguages = ['Amharic', 'English', 'Afan Oromo', 'Spanish'];
+      for (const subName of subLanguages) {
+        const subExists = await categoryRepo.findOne({ where: { name: subName } });
+        if (!subExists) {
+          await categoryRepo.save(categoryRepo.create({ 
+            name: subName, 
+            description: `Learning ${subName}`,
+            parent: category
+          }));
+          console.log(`Sub-category ${subName} created under Language.`);
+        }
+      }
     }
   }
 
-  // 2. Seed Initial Vocabulary (Language)
+  // 3. Seed Initial Vocabulary (Language)
   const initialVocab = [
+    { word: 'selam', meaning: 'Peace/Hello', example: 'Selam, endiet neh?', language: 'am' },
     { word: 'hello', meaning: 'A common greeting', example: 'Hello, how are you?', language: 'en' },
-    { word: 'world', meaning: 'The planet earth and all life on it', example: 'The world is beautiful.', language: 'en' },
-    { word: 'coding', meaning: 'The process of assigning a code to something for classification or identification', example: 'I love coding in NestJS.', language: 'en' },
-    { word: 'nest', meaning: 'A structure or place made or chosen by a bird for laying its eggs', example: 'The bird built a nest.', language: 'en' },
+    { word: 'coding', meaning: 'The process of assigning a code', example: 'I love coding.', language: 'en' },
   ];
 
   for (const item of initialVocab) {

@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne } from 'typeorm';
 import { Video } from '../../videos/entities/video.entity';
 
 @Entity('categories')
@@ -7,10 +7,16 @@ export class Category {
   id: string;
 
   @Column({ unique: true })
-  name: string; // maths, coding, cooking, language
+  name: string;
 
   @Column({ nullable: true })
   description: string;
+
+  @ManyToOne(() => Category, (category) => category.children, { nullable: true })
+  parent: Category;
+
+  @OneToMany(() => Category, (category) => category.parent)
+  children: Category[];
 
   @OneToMany(() => Video, (video) => video.category)
   videos: Video[];
