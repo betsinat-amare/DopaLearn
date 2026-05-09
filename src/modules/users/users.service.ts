@@ -13,8 +13,8 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
   ) { }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const { email, username, password } = createUserDto;
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
+    const { name, email, username, password } = createUserDto;
 
     // Check if user already exists
     const existingUser = await this.userRepository.findOne({
